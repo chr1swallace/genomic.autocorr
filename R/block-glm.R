@@ -55,7 +55,7 @@ acf.summary <- function(data,variables,order.by=NULL,lag.max=100) {
     nulls <- sapply(SUMM,is.null)
     if(any(nulls)) {
         warning("dropped ",sum(nulls)," non-varying variable(s):\n",paste(variables[which(nulls)],collapse=" "))
-        SUMM <- SUMM[!null]
+        SUMM <- SUMM[!nulls]
     }
     do.call("rbind", SUMM)
 }

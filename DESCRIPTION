@@ -5,7 +5,7 @@ Authors@R: c(person("Chris", "Wallace", email = "cew54@cam.ac.uk", role = c("aut
 	   person("Oliver", "Burren", email = "oliver.burren@cimr.cam.ac.uk", role = c("aut")))
 Description: Uses block boostrapping to estimate correct variance of parameters from glms.
 Depends:
-    R (>= 3.2.4)
+    R (>= 3.2.2)
 License: GPL
 LazyData: true
 RoxygenNote: 5.0.1

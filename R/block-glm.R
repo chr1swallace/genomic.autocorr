@@ -4,7 +4,7 @@
 ##' @importFrom reshape melt.matrix
 NULL
 
-globalVariables(".")
+globalVariables(c(".","value","beta.025","beta.975","variable"))
 
 ##' acf.summary
 ##'
@@ -56,6 +56,7 @@ acf.summary <- function(data,variables,order.by=NULL,max=100) {
 ##' @title internal function to simulate data for examples
 ##' @param n number of independent observations
 ##' @param m group size - number of times each independent observation is repeated
+##' @param beta Y1 ~ N( beta * X, 1)
 ##' @return data.table with
 ##' Chr (always 1, possibly needed for bootstrap),
 ##' x (explanatory variable),
@@ -63,7 +64,8 @@ acf.summary <- function(data,variables,order.by=NULL,max=100) {
 ##' y0 (response variable unrelated to x)
 ##' name (unique name for each independent observation)
 ##' @author Chris Wallace
-.sim.data <- function(n=500,m=10,beta) {
+##' @rdname internalfunctions
+.sim.data <- function(n=500,m=10,beta=0.2) {
     n <- 500 # 
     m <- 10 #
     message("simulating ",n," independent observations repeated in blocks of ",m)

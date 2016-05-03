@@ -18,7 +18,7 @@ globalVariables(c(".","value","beta.025","beta.975","variable"))
 ##' ## should be autocorrelation only within windows <= 10
 ##' library(data.table)
 ##' data <- genomic.autocorr:::.sim.data() 
-##' summ <- acf.summary(data,c("x","y0","y1"),max=20)
+##' summ <- acf.summary(data,c("x","y0","y1"),lag.max=20)
 ##'
 ##' ## plot it
 ##' df <- melt(summ,c("lag","variable"),variable.name="acf")
@@ -39,16 +39,24 @@ globalVariables(c(".","value","beta.025","beta.975","variable"))
 ##' legend("bottomright",
 ##'        c("x","y0","y1"),
 ##'        pch = "xo+", col = 1:3)
-acf.summary <- function(data,variables,order.by=NULL,max=100) {
+acf.summary <- function(data,variables,order.by=NULL,lag.max=100) {
     if(!is.null(order.by))
-        data <- data[ order(data[[order.by]]), ]    
+        data <- data[ order(data[[order.by]]), ]
+    dropna <- function(x) x[ !is.na(x) ]
     SUMM <- mclapply(variables, function(x) {
-        my.ts=ts(data[[x]],start=1)
-        acf.a <- acf(my.ts,lag.max=max,plot=FALSE) 
-        acf.p <- acf(my.ts,type="p",lag.max=max,plot=FALSE)
+        if(var(data[[x]],na.rm=TRUE)==0)
+            return(NULL)
+        my.ts=ts(dropna(data[[x]]),start=1)
+        acf.a <- acf(my.ts,lag.max=lag.max,plot=FALSE) 
+        acf.p <- acf(my.ts,type="p",lag.max=lag.max,plot=FALSE)
         dt <- data.table(lag=acf.p$lag,full=acf.a$acf[-1],partial=acf.p$acf)
         dt[,variable:=x]
         dt })
+    nulls <- sapply(SUMM,is.null)
+    if(any(nulls)) {
+        warning("dropped ",sum(nulls)," non-varying variable(s):\n",paste(variables[which(nulls)],collapse=" "))
+        SUMM <- SUMM[!null]
+    }
     do.call("rbind", SUMM)
 }
 ##' internal function to simulate data for examples

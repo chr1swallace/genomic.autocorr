@@ -4,7 +4,7 @@
 \alias{acf.summary}
 \title{acf.summary}
 \usage{
-acf.summary(data, variables, order.by = NULL, max = 100)
+acf.summary(data, variables, order.by = NULL, lag.max = 100)
 }
 \arguments{
 \item{data}{data.table containing the columns referred to in f.lhs
@@ -25,7 +25,7 @@ summarize the autocorrelation in
 ## should be autocorrelation only within windows <= 10
 library(data.table)
 data <- genomic.autocorr:::.sim.data() 
-summ <- acf.summary(data,c("x","y0","y1"),max=20)
+summ <- acf.summary(data,c("x","y0","y1"),lag.max=20)
 
 ## plot it
 df <- melt(summ,c("lag","variable"),variable.name="acf")

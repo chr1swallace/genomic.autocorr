@@ -10,8 +10,10 @@ globalVariables(c(".","value","beta.025","beta.975","variable"))
 ##'
 ##' summarize the autocorrelation in 
 ##' @inheritParams block.glm
+##' @param data data.table containing variables named in `variables` and `order.by`
 ##' @param variables character vector listing columns of `data` to be explored for autocorrelation
-##' @param max maximum block size to explore (default=100)
+##' @param order.by optionally, order `data` by variables in character vector `order.by`
+##' @param lag.max maximum block size to explore (default=100)
 ##' @export
 ##' @examples
 ##' ## simulate data with 10 repeated observations in a row - ie there

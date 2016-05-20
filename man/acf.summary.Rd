@@ -7,15 +7,13 @@
 acf.summary(data, variables, order.by = NULL, lag.max = 100)
 }
 \arguments{
-\item{data}{data.table containing the columns referred to in f.lhs
-and f.rhs}
+\item{data}{data.table containing variables named in `variables` and `order.by`}
 
 \item{variables}{character vector listing columns of `data` to be explored for autocorrelation}
 
-\item{order.by}{if not `NULL`, the name of a column in `data` on
-which it should be sorted}
+\item{order.by}{optionally, order `data` by variables in character vector `order.by`}
 
-\item{max}{maximum block size to explore (default=100)}
+\item{lag.max}{maximum block size to explore (default=100)}
 }
 \description{
 summarize the autocorrelation in

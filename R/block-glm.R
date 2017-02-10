@@ -205,12 +205,12 @@ block.glm<-function(f.lhs,
     f1 <- paste(f.lhs,f.rhs,sep=" ~ ")
     fun <- function(data,...) {
         tmp <- lapply(f1, function(f) {
-            glm(as.formula(f), data=data) %>% coef()
+            glm(as.formula(f), data=data, ...) %>% coef()
         })  %>% do.call("rbind",.)
         rownames(tmp) <- f.lhs
         tmp
     }
-    effects <- fun(data) #, ...)
+    effects <- fun(data,...) #, ...)
 
 
   ## we want to select n/block.size blocks
@@ -223,7 +223,7 @@ block.glm<-function(f.lhs,
     idx<-lapply(samp,function(x){
       seq(from=x,to=x+block.size-1,by=1)
     }) %>% unlist()
-    fun(data[idx,])#,...)
+    fun(data[idx,],...)
   })
 
     byvars <- c("y","x")

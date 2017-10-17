@@ -3,10 +3,11 @@ Title: Fit Models Dealing with Spatial Dependency in Genomic Data
 Version: 1.0-1
 Authors@R: c(person("Chris", "Wallace", email = "cew54@cam.ac.uk", role = c("aut", "cre")),
 	   person("Oliver", "Burren", email = "ob219@cam.ac.uk", role = c("aut")))
-Description: Uses block bootsrapping to estimate correct variance of parameters in a GLM.
+Description: Uses block bootstrapping to estimate correct variance of parameters in a G.L.M.
+Date: 2017-10-17
 Depends:
     R (>= 3.2.2)
-License: GPL
+License: GPL-2
 LazyData: true
 RoxygenNote: 6.0.1
 Imports: data.table,
@@ -14,3 +15,4 @@ Imports: data.table,
 	 reshape,
 	 parallel
 Suggests: testthat
+URL: https://github.com/chr1swallace/genomic.autocorr

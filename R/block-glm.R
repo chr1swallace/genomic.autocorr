@@ -100,7 +100,7 @@ acf.summary <- function(data,variables,order.by=NULL,lag.max=100) {
 ##' independence between neighbouring genomic elements when, in
 ##' reality, there is spatial dependence.  This function implements a
 ##' block bootstrap method for estimating correct variances of
-##' paramter estimates.
+##' parameter estimates.
 ##'
 ##' Note that this function uses `mclapply` to parallelise the
 ##' bootstrapping.  Please set `mc.cores` to something sensible, eg

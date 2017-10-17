@@ -2,6 +2,7 @@
 ##' @import magrittr
 ##' @importFrom parallel mclapply
 ##' @importFrom reshape melt.matrix
+##' @importFrom stats acf as.formula coef glm median quantile rnorm sd ts var
 NULL
 
 globalVariables(c(".","value","beta.025","beta.975","variable"))

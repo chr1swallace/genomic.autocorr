@@ -102,4 +102,3 @@ box()
 \author{
 Chris Wallace and Oliver Burren
 }
-

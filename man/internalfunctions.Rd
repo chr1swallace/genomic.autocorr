@@ -27,4 +27,3 @@ internal function to simulate data for examples
 \author{
 Chris Wallace
 }
-

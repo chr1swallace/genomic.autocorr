@@ -1,9 +1,9 @@
 Package: genomic.autocorr
 Title: Fit Models Dealing with Spatial Dependency in Genomic Data
-Version: 0.0.0.9000
+Version: 1.0-1
 Authors@R: c(person("Chris", "Wallace", email = "cew54@cam.ac.uk", role = c("aut", "cre")),
 	   person("Oliver", "Burren", email = "ob219@cam.ac.uk", role = c("aut")))
-Description: Uses block boostrapping to estimate correct variance of parameters from glms.
+Description: Uses block bootsrapping to estimate correct variance of parameters in a GLM.
 Depends:
     R (>= 3.2.2)
 License: GPL

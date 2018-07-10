@@ -107,8 +107,8 @@ acf.summary <- function(data,variables,order.by=NULL,lag.max=100) {
 ##' if you have 10 cores.
 ##'
 ##' @param f.lhs character vector, left hand side of a formula, the
-##'     model(s) to be fit will be defined by
-##'     `paste(f.lhs, f.rhs, sep=" ~ ")`
+##'     model(s) to be fit will be defined by `paste(f.lhs, f.rhs,
+##'     sep=" ~ ")`
 ##' @param f.rhs character string, right hand side of a formula
 ##' @param data data.table containing the columns referred to in f.lhs
 ##'     and f.rhs
@@ -123,6 +123,7 @@ acf.summary <- function(data,variables,order.by=NULL,lag.max=100) {
 ##'     will be sampled for bootstrap estimation of variance of
 ##'     parameter estimates
 ##' @param B number of bootstrap estimates
+##' @param family glm family, default gaussian
 ##' @param ... other arguments passed to `glm()` (eg
 ##'     `family="binomial"`)
 ##' @return data.table giving the estimated effect ("beta") of each
@@ -180,8 +181,10 @@ block.glm<-function(f.lhs,
                       data,
                       order.by=NULL,
                       strat.by=NULL,
+                      group.by=NULL,
                       block.size=20,
-                      B=200,
+                    B=200,
+                    family="gaussian",
                       ...){
 
 #  message(f)
@@ -205,7 +208,7 @@ block.glm<-function(f.lhs,
     f1 <- paste(f.lhs,f.rhs,sep=" ~ ")
     fun <- function(data,...) {
         tmp <- lapply(f1, function(f) {
-            glm(as.formula(f), data=data) %>% coef()
+            glm(as.formula(f), data=data, family=family) %>% coef()
         })  %>% do.call("rbind",.)
         rownames(tmp) <- f.lhs
         tmp
@@ -245,4 +248,139 @@ block.glm<-function(f.lhs,
     results[,beta.025:=2*beta - beta.025]
     results[,beta.975:=2*beta - beta.975]
   return(results)  
+}
+
+
+
+##' block.glm
+##' 
+##' Regression models for genomic data often assume there is
+##' independence between neighbouring genomic elements when, in
+##' reality, there is spatial dependence.  This function implements a
+##' block bootstrap method for estimating correct variances of
+##' paramter estimates.
+##'
+##' Note that this function uses `mclapply` to parallelise the
+##' bootstrapping.  Please set `mc.cores` to something sensible, eg
+##' \code{options(mc.cores=10)}
+##' if you have 10 cores.
+##'
+##' @param f.lhs character vector, left hand side of a formula, the
+##'     model(s) to be fit will be defined by `paste(f.lhs, f.rhs,
+##'     sep=" ~ ")`
+##' @param f.rhs character string, right hand side of a formula
+##' @param data data.table containing the columns referred to in f.lhs
+##'     and f.rhs
+##' @param order.by if not `NULL`, the name of a column in `data` on
+##'     which it should be sorted
+##' @param strat.by if not `NULL`, the name of a column in `data` on
+##'     which it should be stratified before block sampling.  Eg, if
+##'     you are considering genomic data, you should stratify by
+##'     chromosome as there should be no spatial correlation between
+##'     chromosomes
+##' @param block.size size of blocks of contiguous observations that
+##'     will be sampled for bootstrap estimation of variance of
+##'     parameter estimates
+##' @param B number of bootstrap estimates
+##' @param family glm family, default gaussian
+##' @param ... other arguments passed to `glm()` (eg
+##'     `family="binomial"`)
+##' @return data.table giving the estimated effect ("beta") of each
+##'     item in f.rhs on each item in f.lhs, together with block
+##'     bootstrap estimates of confidence interval (beta.025,
+##'     beta.975) and standard error (se.beta) and the number of
+##'     bootstraps on which those estimates are based.
+##' @author Chris Wallace and Oliver Burren
+##' @export
+##' @examples
+##'
+##' ## simulate data with 10 repeated observations in a row - ie there
+##' ## should be autocorrelation only within windows <= 10
+##' library(data.table)
+##' data <- genomic.autocorr:::.sim.data(beta=0.2) 
+##'
+##' ## suppose we ignored the autocorrelation and look at the
+##' ## confidence interval for the effect of x on y1
+##' r1<-summary(glm(y1 ~ x, data=data))$coefficients
+##' r1
+##'
+##' ## if we know the block structure, as here, we can see the
+##' ## confidence interval is (inappropriately) much tighter than
+##' ## if we used just independent observations
+##' r2<-summary(glm(y1 ~ x, data=data[!duplicated(name),]))$coefficients
+##' r2
+##'
+##' ## use block bootstrap - x should only have a significant effect
+##' ## on y1 and the confidence interval around its effect should be
+##' ## closer to r2, above
+##' r <- block.glm(f.lhs=c("y0","y1"), f.rhs="x",data=data,block.size=20,B=200)
+##' r
+##'
+##' ## compare the block bootstrap and model based confidence intervals for x on y1
+##' results <- rbind(c(r1[2,1], r1[2,1]-1.96*r1[2,2], r1[2,1]+1.96*r1[2,2]),
+##' c(r2[2,1], r2[2,1]-1.96*r2[2,2], r2[2,1]+1.96*r2[2,2]),
+##' as.numeric(r[4,.(beta,beta.025,beta.975)]))
+##' dimnames(results) <- list(c("standard, ignore blocked","standard, independent obs","bootstrap"),
+##' c("beta","LCI","UCI"))
+##' results
+##' 
+##' with(as.data.frame(results), {
+##' plot(1:nrow(results), beta,ylim=c(min(c(-0.01,LCI)),max(UCI)),axes=FALSE,xlab="Method",
+##' main="Comparison of confidence intervals around coefficient estimates")
+##' segments(x0=1:nrow(results),y0=LCI,y1=UCI)
+##' abline(h=c(0,0.2),lty="dotted")
+##' axis(1,1:nrow(results),rownames(results))
+##' axis(2)
+##' text(x=c(3,3),y=c(0,0.2),labels=c("null","true"),adj=c(1.1,0))
+##' box()
+##' })
+##' 
+group.glm<-function(f.lhs,
+                    f.rhs,
+                    data,
+                    group.by,
+                    block.size=20,
+                    B=200,
+                    family="gaussian",
+                    ...){
+    dsplit <- split(1:nrow(data),as.character(data[[group.by]]))
+    ##   effect size estimates  
+    f1 <- paste(f.lhs,f.rhs,sep=" ~ ")
+    fun <- function(data,...) {
+        tmp <- lapply(f1, function(f) {
+            glm(as.formula(f), data=data, family=family) %>% coef()
+        })  %>% do.call("rbind",.)
+        rownames(tmp) <- f.lhs
+        tmp
+    }
+    effects <- fun(data) #, ...)
+    
+    
+    dsplit.idx <- seq_along(dsplit)
+    n <- length(dsplit)
+    RESULTS<-mclapply(1:B,function(z){
+        samp<-sample(dsplit.idx,n,replace=TRUE)
+        idx <- unlist(dsplit[samp])
+        fun(data[idx])
+    })
+    
+    byvars <- c("y","x")
+    RESULTS %<>% lapply(., reshape::melt.matrix, varnames=byvars) %>%
+    do.call("rbind",.)
+    results <- as.data.table(RESULTS)
+    setkeyv(results,byvars)
+    results <- results[,.(beta.med=median(value),
+                          beta.025=quantile(value,0.975),
+                          beta.975=quantile(value,0.025),
+                          se.beta=sd(value),
+                          nboot=.N),
+                       by=byvars]
+    
+    beta <- reshape::melt.matrix(effects,varnames=byvars)
+    beta <- as.data.table(beta)
+    setnames(beta,"value","beta")
+    results <- merge(results,beta,by=byvars)
+    results[,beta.025:=2*beta - beta.025]
+    results[,beta.975:=2*beta - beta.975]
+    return(results)  
 }

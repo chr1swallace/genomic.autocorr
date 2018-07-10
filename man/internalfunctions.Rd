@@ -17,7 +17,7 @@
 data.table with
 Chr (always 1, possibly needed for bootstrap),
 x (explanatory variable),
-y1 (reponse variable related to x),
+y1 (response variable related to x),
 y0 (response variable unrelated to x)
 name (unique name for each independent observation)
 }
@@ -27,4 +27,3 @@ internal function to simulate data for examples
 \author{
 Chris Wallace
 }
-

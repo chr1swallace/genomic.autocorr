@@ -1,2 +1,3 @@
 genomics.autocor.Rproj
 ^\.travis\.yml$
+^cran-comments\.md$

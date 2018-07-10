@@ -45,4 +45,3 @@ legend("bottomright",
        c("x","y0","y1"),
        pch = "xo+", col = 1:3)
 }
-

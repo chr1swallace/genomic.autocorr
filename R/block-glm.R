@@ -2,6 +2,7 @@
 ##' @import magrittr
 ##' @importFrom parallel mclapply
 ##' @importFrom reshape melt.matrix
+##' @importFrom stats acf as.formula coef glm median quantile rnorm sd ts var
 NULL
 
 globalVariables(c(".","value","beta.025","beta.975","variable"))
@@ -70,7 +71,7 @@ acf.summary <- function(data,variables,order.by=NULL,lag.max=100) {
 ##' @return data.table with
 ##' Chr (always 1, possibly needed for bootstrap),
 ##' x (explanatory variable),
-##' y1 (reponse variable related to x),
+##' y1 (response variable related to x),
 ##' y0 (response variable unrelated to x)
 ##' name (unique name for each independent observation)
 ##' @author Chris Wallace
@@ -99,7 +100,7 @@ acf.summary <- function(data,variables,order.by=NULL,lag.max=100) {
 ##' independence between neighbouring genomic elements when, in
 ##' reality, there is spatial dependence.  This function implements a
 ##' block bootstrap method for estimating correct variances of
-##' paramter estimates.
+##' parameter estimates.
 ##'
 ##' Note that this function uses `mclapply` to parallelise the
 ##' bootstrapping.  Please set `mc.cores` to something sensible, eg
@@ -213,7 +214,7 @@ block.glm<-function(f.lhs,
         rownames(tmp) <- f.lhs
         tmp
     }
-    effects <- fun(data) #, ...)
+    effects <- fun(data,...) #, ...)
 
 
   ## we want to select n/block.size blocks
@@ -226,7 +227,7 @@ block.glm<-function(f.lhs,
     idx<-lapply(samp,function(x){
       seq(from=x,to=x+block.size-1,by=1)
     }) %>% unlist()
-    fun(data[idx,])#,...)
+    fun(data[idx,],...)
   })
 
     byvars <- c("y","x")

@@ -1,0 +1,29 @@
+title: Use block bootstrap to allow for spatial dependencies in genomic data used in glms
+url: http://chr1swallace.github.io/genomic.autocorr
+template:
+  params:
+    bootswatch: simplex
+# reference:
+#   - title: Bayesian enumeration of hypotheses
+#     desc: Two trait colocalisation and single trait fine mapping under single causal variant assumptions
+#     contents:
+#       - '`coloc.abf`'
+#       - '`finemap.abf`'
+#   - title: Proportional colocalisation
+#     desc: ~
+#     contents:
+#       - '`coloc.test`'
+#       - '`coloc.test.summary`'
+#       - '`pcs.prepare`'
+#       - '`pcs.model`'
+  # - title: Others
+  #   desc: Other functions and helpers
+  #   contents:
+  #     - '`compute_gamma0`'
+  #     - '`compute_gamma0_PW`'
+  #     - '`est_statistic`'
+  #     - '`est_zscore`'
+  #     - '`make_GenoProbList`'
+  #     - '`make_dataset`'
+  #     - '`make_dataset_pheno`'
+  #     - '`which_genotypes`'

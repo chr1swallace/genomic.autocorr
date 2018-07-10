@@ -47,7 +47,7 @@ Regression models for genomic data often assume there is
 independence between neighbouring genomic elements when, in
 reality, there is spatial dependence.  This function implements a
 block bootstrap method for estimating correct variances of
-paramter estimates.
+parameter estimates.
 }
 \details{
 Note that this function uses `mclapply` to parallelise the
@@ -102,4 +102,3 @@ box()
 \author{
 Chris Wallace and Oliver Burren
 }
-
